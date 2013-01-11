@@ -1,0 +1,4 @@
+[server]
+hostname: imap.mail.me.com
+username: <your_icloud_login>
+password: <your_icloud_password>
