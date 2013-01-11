@@ -10,3 +10,7 @@ Features
 * Create a new note in iCloud
 * Search for existing notes
 * List/count current notes
+
+Todo
+----
+* Implement sighandler
