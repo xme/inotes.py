@@ -13,11 +13,13 @@ import ConfigParser
 import email.message
 import os
 import sys
-import optparse
 import time
+from optparse import OptionParser
 from HTMLParser import HTMLParser
 
 global debug 
+global configFile
+configFile = '~/inotes.conf'
 
 class MLStripper(HTMLParser):
 	def __init__(self):
@@ -144,11 +146,11 @@ def createNote(configFile, subject,savehtml):
 	return
 
 def main(argv):
-	configFile = '~/inotes.conf'
 	global debug
+	global configFile
 	debug = 0
 
-	parser = optparse.OptionParser()
+	parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
 	parser.add_option('-c', '--config', dest='configFile', type='string', \
 		help='specify the configuration file')
 	parser.add_option('-C', '--count', action='store_true', dest='count', \
@@ -166,20 +168,25 @@ def main(argv):
 	parser.add_option('-S', '--striphtml', action='store_true', dest='stripHtml', \
 		help='remove HTML tags from displayed notes')
 	(options, args) = parser.parse_args()
-	if options.debug:
+	if options.debug == True:
 		debug = 1
 		print '+++ Debug mode'
 	if options.configFile == None:
-		print parser.usage
-		sys.exit(1)
-	if options.count:
-		countNotes(options.configFile)
-	elif options.list:
-		listNotes(options.configFile)
-	elif options.query:
-		searchNotes(options.configFile, options.query, options.stripHtml)
+		if not os.path.isfile(configFile):
+			print 'Cannot open ' + configFile + '. Use the -c switch to provide a valid configuration.'
+			sys.exit(1)
 	else:
-		createNote(options.configFile, options.subject, options.saveHtml)
+		configFile = options.configFile
+	if debug: print '+++ Configuration file:', configFile
+
+	if options.count == True:
+		countNotes(configFile)
+	elif options.list == True:
+		listNotes(configFile)
+	elif options.query != None:
+		searchNotes(configFile, options.query, options.stripHtml)
+	else:
+		createNote(configFile, options.subject, options.saveHtml)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
